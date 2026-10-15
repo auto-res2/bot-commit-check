@@ -1,0 +1,18 @@
+name: bot-commit
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: git push with github.token
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo a > from-actions-git.txt && git add . && git commit -m "actions: git push" && git push
+      - name: API commit with github.token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/contents/from-actions-api.txt" -f message="actions: api" -f content="$(echo b | base64)"
